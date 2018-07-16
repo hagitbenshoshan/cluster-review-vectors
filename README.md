@@ -4,15 +4,39 @@ This resource contains utilities for clustering (semantic) vectors with Python. 
 
 If you call `head` on a GloVe file, you'll see it's structured like this:
 
-<pre><code>the 0.04656 0.21318 -0.0074364 [...] 0.053913
-, -0.25539 -0.25723 0.13169 [...] 0.35499
-. -0.12559 0.01363 0.10306 [...] 0.13684
-of -0.076947 -0.021211 0.21271 [...] -0.046533
-to -0.25756 -0.057132 -0.6719 [...] -0.070621
-[...]
-sandberger 0.429191 -0.296897 0.15011 [...] -0.0590532</code></pre>
+<pre><code>32939276 -0.019841426 0.025862843 0.003790899 -0.000359371 -0.003321933 [...]  -0.000436533
+33374263 -0.004422366 -0.007749286 -0.003212388 0.000472978 -0.000795836 [...] -0.001276645</code></pre>
 
-Each line contains a single user id followed by <i>n</i> signed float values, where <i>n</i> = the number of dimensions signified in the filename (e.g. imdb.300d.txt projects each user into 300 dimensions). 
+to generate the vector file (1000 Users , 50 features per user - representing the top 50 DVR words weights differences)  , we run the command : 
+<pre><code>
+SELECT
+  CONCAT(CAST(user_id AS string), ' ',vec_line) asvec_line
+FROM (
+  SELECT
+    user_id,
+    ANY_VALUE(vec_line) AS vec_line
+  FROM (
+    SELECT
+      user_id,
+      STRING_AGG ( CAST(ndiff AS string),' ') OVER (PARTITION BY user_id ORDER BY rnk ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS vec_line
+    FROM (
+      SELECT
+        user_id,
+        ROUND(-1*diff,9) AS ndiff,
+        word,
+        rnk
+      FROM
+        `imdb.help_all_vectors_30_plus`
+      WHERE
+        user_id IN (SELECT user_id  FROM `imdb.help3_30_plus` GROUP BY  1 LIMIT 1000) -- Number of users
+        AND rnk< 51  -- Number of features 
+      ORDER BY
+        user_id,
+        rnk))
+  GROUP BY
+    user_id) </code></pre>
+    
+Each line contains a single user id followed by <i>n</i> signed float values,rounded to 9 decimal positions,  where <i>n</i> = the number of dimensions signified in the filename (e.g. vec_1000U_50P.txt projects each user into 50 dimensions). 
 
 One can cluster these vectors by running:
 
@@ -20,8 +44,8 @@ One can cluster these vectors by running:
 
 n_words = the number of users from imdb.300d.txt you wish to cluster, and reduction_factor = a float that controls how many clusters to produce. For example, one can run:
 
-`python cluster_vectors.py imdb.300d.txt 10000 .1`
+`python cluster_vectors.py vec_1000U_50P.txt 10000 .1`
 
 This command will read the first 10000 users from the specified file, and will generate 10000 * .1 (or 1000) clusters of users. These clusters may then be used for many different kinds of NLP tasks, such as document clustering, dimension reduction of natural language documents, or the detection of textual reuse. 
 
-`/clusters/` contains a file with 20 clustered users, generated through the command `python cluster_vectors.py imdb.300d.txt 2000 .01` 
+`/clusters/` contains a file with 10 clustered users, generated through the command `python cluster_vectors.py vec_1000U_50P.txt 1000 .01` 
