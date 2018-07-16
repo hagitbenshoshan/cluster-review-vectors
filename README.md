@@ -2,7 +2,7 @@
 
 This resource contains utilities for clustering (semantic) vectors with Python. To get started, We created vectors as used in GloVe semantic vector file from the Stanford repository (found in http://www-nlp.stanford.edu/data ) 
 
-If you call `head` on a GloVe file, you'll see it's structured like this:
+If you call `head` on a vector file, you'll see it's structured like this:
 
 <pre><code>32939276 -0.019841426 0.025862843 0.003790899 -0.000359371 -0.003321933 [...]  -0.000436533
 33374263 -0.004422366 -0.007749286 -0.003212388 0.000472978 -0.000795836 [...] -0.001276645</code></pre>
