@@ -1,9 +1,6 @@
 # cluster-review-vectors
 
-This resource contains utilities for clustering (semantic) vectors with Python. To get started, We created vectors as used in GloVe semantic vector file from the Stanford repository:
-
-<pre><code>wget http://www-nlp.stanford.edu/data/glove.6B.300d.txt.gz
-gunzip glove.6B.300d.txt.gz</code></pre>
+This resource contains utilities for clustering (semantic) vectors with Python. To get started, We created vectors as used in GloVe semantic vector file from the Stanford repository (found in http://www-nlp.stanford.edu/data ) 
 
 If you call `head` on a GloVe file, you'll see it's structured like this:
 
