@@ -20,11 +20,8 @@ FROM (
       user_id,
       STRING_AGG ( CAST(ndiff AS string),' ') OVER (PARTITION BY user_id ORDER BY rnk ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS vec_line
     FROM (
-      SELECT
-        user_id,
-        ROUND(-1*diff,9) AS ndiff,
-        word,
-        rnk
+        SELECT user_id,
+        if(lw is null , ROUND(-1*global_weight,9),  ROUND(lw-global_weight  ,9) )  AS ndiff ,word , rnk
       FROM
         `imdb.help_all_vectors_30_plus`
       WHERE
