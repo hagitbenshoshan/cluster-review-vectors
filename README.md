@@ -1,4 +1,4 @@
-# bq_read.py
+# read_database_reviews.py
 Read reviews text data we stored in google bigquery , and create a single text file per user , concatenates its reviews from at least 30 different reviews. the output file name is review_{user_id}.txt  (for example review_858542.txt)  
 
 # tokenize_remove_stem_pos.py
