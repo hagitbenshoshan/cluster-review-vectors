@@ -92,10 +92,7 @@ for book_filename in matches:
 
     for line in file:
         line=unicode(line, errors='ignore')
-        
-        #toker = RegexpTokenizer(r'((?<=[^\w\s])\w(?=[^\w\s])|(\W))+', gaps=True)
-        #regwords = toker.tokenize(line)
-        
+                     
         my_clean_text=''
 
         """ phase1 tokenize,lower,remove stopwords """
@@ -122,7 +119,6 @@ for book_filename in matches:
                 try:
                     if tag.encode('utf-8').strip()!='.':
                         out.write(book_dir+','+book_chapter+','+w+','+tag.encode('utf-8').strip()+','+theme.encode('utf-8').strip()+'\n')
-                        #print (dir_name+','+book_chapter+','+w+','+tag.encode('utf-8').strip()+','+theme.encode('utf-8').strip()+'\n')
                 except:
                     pass
     out.close()
