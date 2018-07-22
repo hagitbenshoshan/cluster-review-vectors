@@ -31,20 +31,19 @@ FROM (
   FROM (
     SELECT
       user_id,
-      STRING_AGG ( CAST(ndiff AS string),' ') OVER (PARTITION BY user_id ORDER BY rnk ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS vec_line
+      STRING_AGG ( CAST(diff AS string),' ') OVER (PARTITION BY user_id ORDER BY rnk ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS vec_line
     FROM (
-        SELECT user_id,
-        if(lw is null , ROUND(-1*global_weight,9),  ROUND(lw-global_weight  ,9) )  AS ndiff ,word , rnk
+        SELECT user_id,diff,word , rnk
       FROM
-        `imdb.help_all_vectors_30_plus`
+        `imdb2.help3_NN_vectors`
       WHERE
-        user_id IN (SELECT user_id  FROM `imdb.help3_30_plus` GROUP BY  1 LIMIT 1000) -- Number of users
-        AND rnk< 51  -- Number of features 
+        user_id IN (SELECT user_id  FROM `imdb2.NN_Distances` GROUP BY  1 LIMIT 1000) -- Number of users
+        AND rnk< 51 -- Number of features 
       ORDER BY
         user_id,
         rnk))
   GROUP BY
-    user_id) </code></pre>
+    user_id)  </code></pre>
     
 Each line contains a single user id followed by <i>n</i> signed float values,rounded to 9 decimal positions,  where <i>n</i> = the number of dimensions signified in the filename (e.g. vec_1000U_50P.txt projects each user into 50 dimensions). 
 
