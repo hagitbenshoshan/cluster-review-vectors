@@ -33,7 +33,7 @@ FROM (
       user_id,
       STRING_AGG ( CAST(diff AS string),' ') OVER (PARTITION BY user_id ORDER BY rnk ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS vec_line
     FROM (
-        SELECT user_id,diff,word , rnk
+        SELECT user_id,round(diff,9) diff ,word , rnk
       FROM
         `imdb2.help3_NN_vectors`
       WHERE
