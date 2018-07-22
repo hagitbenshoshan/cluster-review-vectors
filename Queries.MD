@@ -10,3 +10,5 @@ cross join         subQ2
      select b.user_id buid ,  b.lrnk lrnk ,b.local_weight lw, a.*, if(b.local_weight>0 ,b.local_weight ,0) -a.global_weight   as diff , abs(if(b.local_weight>0 ,b.local_weight ,0)  -a.global_weight) as sorter 
      from (SELECT * FROM `imdb2.help3_NN_comb`  ) a  left join `imdb2.help3_NN` b   using (user_id,word) 
       ) 
+# Calculating distance (/2) . Results in NN_Distances 
+SELECT user_id,sum(sorter)/2  as distance  FROM `imdb2.help3_NN_vectors`  group by 1 order by 2 desc 
