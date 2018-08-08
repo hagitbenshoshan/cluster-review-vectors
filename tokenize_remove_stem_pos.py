@@ -1,4 +1,5 @@
 
+
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 27 23:39:43 2016
@@ -45,7 +46,9 @@ import nltk
 from nltk.stem import SnowballStemmer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-#from porter2stemmer import Porter2Stemmer
+from nltk.tokenize import wordpunct_tokenize 
+import re 
+ #from porter2stemmer import Porter2Stemmer
 from nltk.stem import WordNetLemmatizer
 wnl= WordNetLemmatizer()
 #stemmer = Porter2Stemmer()
@@ -92,23 +95,36 @@ for book_filename in matches:
 
     for line in file:
         line=unicode(line, errors='ignore')
-                     
+        
+        #toker = RegexpTokenizer(r'((?<=[^\w\s])\w(?=[^\w\s])|(\W))+', gaps=True)
+        #regwords = toker.tokenize(line)
+        
         my_clean_text=''
 
         """ phase1 tokenize,lower,remove stopwords """
         stop_words = set(stopwords.words('english'))
+        stop_words.update(['.', ',', '"', "'", '?', '!', ':', ';', '(', ')', '[', ']', '{', '}','’','‘','--','“','”','!','*','-'])
         # tokenize
-        word_tokens = word_tokenize(line)
+        #word_tokens = word_tokenize(line)
+        word_tokens = wordpunct_tokenize(line)
         # lowercase
         lower_word_tokens = [w.lower() for w in word_tokens]
         # remove stop words
-        filtered_sentence = [w for w in lower_word_tokens if not w in stop_words and w not in string.punctuation and w not in ("’","‘","--","“","”","!") ]
+        filtered_sentence = [w for w in lower_word_tokens if not w in stop_words and w not in string.punctuation and w not in ("’","‘","--","“","”","!",'(',')',';','?','.','\n','') ]
+        #filtered_sentence = [w for w in lower_word_tokens if not w in stop_words] # and w not in string.punctuation and w not in ("’","‘","--","“","”","!") ]
+
         """ phase2 stemmer , lemmetizer  """
 
         for w in filtered_sentence:
             # First lemmetizer
-            lw = wnl.lemmatize(w)
-            myword = stemmer.stem(lw)
+            #lw = wnl.lemmatize(w)
+            #myword = stemmer.stem(lw)
+            
+            #Stemmer
+            # replace special characters 
+            w = re.sub('[^a-zA-Z0-9\n\.]', ' ', w)
+            myword = stemmer.stem(w)
+
             my_clean_text = my_clean_text+' '+myword
 
             """ phase3 tag POS """
@@ -119,6 +135,7 @@ for book_filename in matches:
                 try:
                     if tag.encode('utf-8').strip()!='.':
                         out.write(book_dir+','+book_chapter+','+w+','+tag.encode('utf-8').strip()+','+theme.encode('utf-8').strip()+'\n')
+                        #print (dir_name+','+book_chapter+','+w+','+tag.encode('utf-8').strip()+','+theme.encode('utf-8').strip()+'\n')
                 except:
                     pass
     out.close()
